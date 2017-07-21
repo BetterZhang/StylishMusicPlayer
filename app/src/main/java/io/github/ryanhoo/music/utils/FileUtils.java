@@ -2,8 +2,6 @@ package io.github.ryanhoo.music.utils;
 
 import android.media.MediaMetadataRetriever;
 import android.text.TextUtils;
-import io.github.ryanhoo.music.data.model.Folder;
-import io.github.ryanhoo.music.data.model.Song;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -12,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import io.github.ryanhoo.music.data.model.Folder;
+import io.github.ryanhoo.music.data.model.Song;
 
 /**
  * Created with Android Studio.
@@ -59,6 +60,52 @@ public class FileUtils {
                 Song song = fileToMusic(file);
                 if (song != null) {
                     songs.add(song);
+                }
+            }
+        }
+        if (songs.size() > 1) {
+            Collections.sort(songs, new Comparator<Song>() {
+                @Override
+                public int compare(Song left, Song right) {
+                    return left.getTitle().compareTo(right.getTitle());
+                }
+            });
+        }
+        return songs;
+    }
+
+    public static List<Song> musicFilesBySelect(File dir, String startNumStr, String endNumStr) {
+        List<Song> songs = new ArrayList<>();
+        if (dir != null && dir.isDirectory()) {
+            final File[] files = dir.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File item) {
+                    return item.isFile() && isMusic(item);
+                }
+            });
+            int startNum = 0, endNum = 0;
+            try {
+                startNum = Integer.parseInt(startNumStr);
+                endNum = Integer.parseInt(endNumStr);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (startNum > endNum) {
+
+            } else {
+                int fileNum = 0;
+                for (File file : files) {
+                    try {
+                        fileNum = Integer.parseInt(file.getName().substring(0, file.getName().indexOf(" ")));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (fileNum >= startNum && fileNum <= endNum) {
+                        Song song = fileToMusic(file);
+                        if (song != null) {
+                            songs.add(song);
+                        }
+                    }
                 }
             }
         }

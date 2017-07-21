@@ -1,5 +1,10 @@
 package io.github.ryanhoo.music.ui.local.folder;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import io.github.ryanhoo.music.RxBus;
 import io.github.ryanhoo.music.data.model.Folder;
 import io.github.ryanhoo.music.data.model.PlayList;
@@ -15,11 +20,6 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Created with Android Studio.
@@ -167,6 +167,44 @@ public class FolderPresenter implements FolderContract.Presenter {
     @Override
     public void refreshFolder(final Folder folder) {
         Subscription subscription = Observable.just(FileUtils.musicFiles(new File(folder.getPath())))
+                .flatMap(new Func1<List<Song>, Observable<Folder>>() {
+                    @Override
+                    public Observable<Folder> call(List<Song> songs) {
+                        folder.setSongs(songs);
+                        folder.setNumOfSongs(songs.size());
+                        return mRepository.update(folder);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Folder>() {
+                    @Override
+                    public void onStart() {
+                        mView.showLoading();
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.hideLoading();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.hideLoading();
+                        mView.handleError(e);
+                    }
+
+                    @Override
+                    public void onNext(Folder folder) {
+                        mView.onFolderUpdated(folder);
+                    }
+                });
+        mSubscriptions.add(subscription);
+    }
+
+    @Override
+    public void refreshFolderBySelect(final Folder folder, String startNumStr, String endNumStr) {
+        Subscription subscription = Observable.just(FileUtils.musicFilesBySelect(new File(folder.getPath()), startNumStr, endNumStr))
                 .flatMap(new Func1<List<Song>, Observable<Folder>>() {
                     @Override
                     public Observable<Folder> call(List<Song> songs) {

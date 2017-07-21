@@ -1,12 +1,12 @@
 package io.github.ryanhoo.music.ui.local.folder;
 
+import java.io.File;
+import java.util.List;
+
 import io.github.ryanhoo.music.data.model.Folder;
 import io.github.ryanhoo.music.data.model.PlayList;
 import io.github.ryanhoo.music.ui.base.BasePresenter;
 import io.github.ryanhoo.music.ui.base.BaseView;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * Created with Android Studio.
@@ -43,6 +43,8 @@ import java.util.List;
         void addFolders(List<File> folders, List<Folder> existedFolders);
 
         void refreshFolder(Folder folder);
+
+        void refreshFolderBySelect(Folder folder, String startNumStr, String endNumStr);
 
         void deleteFolder(Folder folder);
 

@@ -9,6 +9,10 @@
         android:title="@string/mp.menu.create_play_list"
         />
     <item
+        android:id="@+id/menu_item_personal_select"
+        android:title="@string/mp.menu.personal_select"
+        />
+    <item
         android:id="@+id/menu_item_refresh"
         android:title="@string/mp.menu.refresh"
         />

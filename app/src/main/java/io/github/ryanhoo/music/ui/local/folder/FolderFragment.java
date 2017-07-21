@@ -5,14 +5,23 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.view.*;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import java.io.File;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.ryanhoo.music.R;
 import io.github.ryanhoo.music.RxBus;
 import io.github.ryanhoo.music.data.model.Folder;
+import io.github.ryanhoo.music.data.model.PersonalSelect;
 import io.github.ryanhoo.music.data.model.PlayList;
 import io.github.ryanhoo.music.data.source.AppRepository;
 import io.github.ryanhoo.music.event.AddFolderEvent;
@@ -27,9 +36,6 @@ import io.github.ryanhoo.music.ui.playlist.EditPlayListDialogFragment;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * Created with Android Studio.
@@ -143,6 +149,17 @@ public class FolderFragment extends BaseFragment implements FolderContract.View,
                                     }
                                 })
                                 .show(getFragmentManager().beginTransaction(), "CreatePlayList");
+                        break;
+                    case R.id.menu_item_personal_select:
+                        new PersonalSelectDialogFragment()
+                                .setCallback(new PersonalSelectDialogFragment.Callback() {
+                                    @Override
+                                    public void onSelect(PersonalSelect personalSelect) {
+                                        mUpdateIndex = position;
+                                        mPresenter.refreshFolderBySelect(folder, personalSelect.getStartNumStr(), personalSelect.getEndNumStr());
+                                    }
+                                })
+                                .show(getFragmentManager().beginTransaction(), "PersonalSelect");
                         break;
                     case R.id.menu_item_refresh:
                         mUpdateIndex = position;
